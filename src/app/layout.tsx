@@ -4,7 +4,7 @@ import "./globals.css";
 import { GlobalProvider } from "@/context/GlobalContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import AuthModal from "@/components/ui/AuthModal";
+import ContactModal from "@/components/ui/AuthModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +34,7 @@ export default function RootLayout({
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-background text-foreground">
         <GlobalProvider>
           <Navbar />
-          <AuthModal />
+          <ContactModal />
           <main className="flex-grow">
             {children}
           </main>
