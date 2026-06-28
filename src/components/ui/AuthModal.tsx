@@ -24,13 +24,13 @@ export default function ContactModal() {
         </button>
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-highfive-blue to-indigo-700 px-8 pt-8 pb-6 text-white">
+        <div className="bg-gradient-to-r from-highfive-blue to-teal-700 px-8 pt-8 pb-6 text-white">
           <div className="flex items-center gap-2.5 mb-3">
             <GraduationCap className="w-6 h-6" />
             <span className="font-extrabold text-lg">HighFive Tutors</span>
           </div>
           <h2 className="text-2xl font-extrabold mb-1">{role === 'student' ? 'Start Learning Today' : 'Start Teaching Today'}</h2>
-          <p className="text-blue-200 text-sm">Fill in your details and we'll get back to you within 24 hours.</p>
+          <p className="text-emerald-200 text-sm">Fill in your details and we'll get back to you within 24 hours.</p>
         </div>
 
         <div className="p-8">
@@ -41,7 +41,7 @@ export default function ContactModal() {
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">Enquiry Sent!</h3>
               <p className="text-slate-500 mb-6">Thank you! Our team will contact you within 24 hours.</p>
-              <button onClick={() => { closeContactModal(); setSubmitted(false); }} className="bg-highfive-blue text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-blue-800 transition-colors">
+              <button onClick={() => { closeContactModal(); setSubmitted(false); }} className="bg-highfive-blue text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-emerald-800 transition-colors">
                 Close
               </button>
             </div>
@@ -75,7 +75,7 @@ export default function ContactModal() {
                 ) : (
                   <input type="text" placeholder="Subjects you can teach" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
                 )}
-                <button type="submit" className="w-full bg-highfive-blue text-white font-bold py-3.5 rounded-xl hover:bg-blue-800 transition-colors flex items-center justify-center gap-2">
+                <button type="submit" className="w-full bg-highfive-blue text-white font-bold py-3.5 rounded-xl hover:bg-emerald-800 transition-colors flex items-center justify-center gap-2">
                   <Send className="w-4 h-4" /> Submit Enquiry
                 </button>
               </form>

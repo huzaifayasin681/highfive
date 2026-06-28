@@ -1,0 +1,206 @@
+// HighFive tutoring marketplace — Prisma schema
+// Dev datasource is SQLite (see prisma.config.ts for the connection url).
+// NOTE: SQLite does not support Prisma enums or String[] scalar lists, so
+// `role`/`status`/`mode` are plain strings (validated in app code) and the
+// teacher<->subject relationship is modelled as a many-to-many relation.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ----------------------------------------------------------------------------
+// Core
+// ----------------------------------------------------------------------------
+
+model User {
+  id            String   @id @default(cuid())
+  role          String   @default("STUDENT") // STUDENT | TEACHER | ADMIN
+  name          String
+  email         String   @unique
+  passwordHash  String?
+  phone         String?
+  image         String?
+  emailVerified Boolean  @default(false)
+  status        String   @default("active") // active | suspended | deleted
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  studentProfile  StudentProfile?
+  teacherProfile  TeacherProfile?
+  requirements    Requirement[]   @relation("StudentRequirements")
+  sentMessages    Message[]       @relation("Sender")
+  reviewsGiven    Review[]        @relation("ReviewAuthor")
+  reviewsReceived Review[]        @relation("ReviewTarget")
+  auditLogs       AuditLog[]      @relation("AuditActor")
+
+  // Auth.js (optional — enables OAuth / db sessions later without a migration)
+  accounts Account[]
+  sessions Session[]
+
+  @@index([role])
+  @@index([status])
+}
+
+model StudentProfile {
+  id       String  @id @default(cuid())
+  userId   String  @unique
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location String?
+}
+
+model TeacherProfile {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio                String?
+  qualifications     String?
+  experienceYears    Int?
+  hourlyRate         Float?
+  location           String?
+  mode               String? // online | in-person | both
+  photoUrl           String?
+  idDocUrl           String?
+  verified           Boolean   @default(false)
+  verificationStatus String    @default("pending") // pending | approved | rejected
+  rating             Float     @default(0)
+  reviewsCount       Int       @default(0)
+  online             Boolean   @default(true)
+  responseTime       String? // e.g. "within 1 hour"
+  studentsTaught     Int       @default(0)
+  subjects           Subject[] @relation("TeacherSubjects")
+}
+
+model Subject {
+  id       String           @id @default(cuid())
+  name     String           @unique
+  teachers TeacherProfile[] @relation("TeacherSubjects")
+}
+
+model Requirement {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     User     @relation("StudentRequirements", fields: [studentId], references: [id], onDelete: Cascade)
+  subject     String
+  level       String?
+  mode        String? // online | in-person | either
+  budget      String?
+  location    String?
+  description String
+  status      String   @default("open") // open | closed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([studentId])
+}
+
+model Message {
+  id         String    @id @default(cuid())
+  senderId   String
+  sender     User      @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  threadId   String
+  content    String
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([threadId])
+  @@index([receiverId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  authorId  String
+  author    User     @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  targetId  String
+  target    User     @relation("ReviewTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  rating    Int
+  comment   String?
+  hidden    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([authorId, targetId])
+  @@index([targetId])
+}
+
+// ----------------------------------------------------------------------------
+// Admin
+// ----------------------------------------------------------------------------
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String
+  actor      User     @relation("AuditActor", fields: [actorId], references: [id])
+  action     String // e.g. USER_SUSPENDED, TEACHER_APPROVED, REVIEW_HIDDEN
+  targetType String
+  targetId   String
+  detail     String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([createdAt])
+}
+
+// Simple CMS-style key/value content blocks the admin can edit (Home, About, FAQ).
+model ContentBlock {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+// Public "Contact us" form submissions, readable from the admin inbox.
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// ----------------------------------------------------------------------------
+// Auth.js adapter tables (for future OAuth / database sessions)
+// ----------------------------------------------------------------------------
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

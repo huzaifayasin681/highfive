@@ -10,6 +10,13 @@ export interface Tutor {
   isFeatured: boolean;
   bio: string;
   status?: 'approved' | 'pending';
+  city?: string;
+  online?: boolean;
+  responseTime?: string;
+  experienceYears?: number;
+  languages?: string[];
+  studentsTaught?: number;
+  mode?: 'online' | 'in-person' | 'both';
 }
 
 export interface GlobalState {
