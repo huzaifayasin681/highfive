@@ -113,8 +113,15 @@ export default function PaymentList({
                 </td>
                 <td className="px-5 py-3.5 text-slate-500 text-xs">
                   {p.receiptUrl ? (
-                    <a href={p.receiptUrl} target="_blank" rel="noreferrer" className="text-highfive-blue hover:underline">
-                      View Receipt
+                    <a 
+                      href={p.receiptUrl} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      download={p.receiptUrl.startsWith("data:") ? "receipt" : undefined}
+                      className="text-highfive-blue hover:underline font-semibold flex items-center gap-1"
+                    >
+                      <Receipt className="w-3.5 h-3.5" />
+                      {p.receiptUrl.startsWith("data:") ? "Download" : "View"}
                     </a>
                   ) : "—"}
                 </td>
