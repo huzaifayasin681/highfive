@@ -6,6 +6,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, requireRole, requireUser } from "@/lib/auth-helpers";
 import { threadIdFor } from "@/lib/messaging";
+import { hasUnlockedTutor } from "@/lib/payments";
 
 export type ActionState = { error?: string; ok?: boolean };
 
@@ -86,11 +87,22 @@ export async function startConversation(formData: FormData): Promise<void> {
   if (!user) redirect(`/login?callbackUrl=/tutors/${targetId}`);
   if (!targetId || targetId === user.id || !content) return;
 
+  // Students must unlock a tutor before messaging; admins bypass. If not yet
+  // unlocked, divert them to the unlock checkout instead of sending.
+  if (user.role === "STUDENT" && !(await hasUnlockedTutor(user.id, targetId))) {
+    redirect(`/tutors/${targetId}`);
+  }
+
   const threadId = threadIdFor(user.id, targetId);
   await prisma.message.create({
     data: { senderId: user.id, receiverId: targetId, threadId, content },
   });
-  redirect(`/student/messages/${threadId}`);
+
+  if (user.role === "TEACHER") {
+    redirect(`/teacher/messages/${threadId}`);
+  } else {
+    redirect(`/student/messages/${threadId}`);
+  }
 }
 
 export async function sendMessage(formData: FormData): Promise<void> {
@@ -106,7 +118,9 @@ export async function sendMessage(formData: FormData): Promise<void> {
   await prisma.message.create({
     data: { senderId: user.id, receiverId, threadId, content },
   });
+  // The composer is shared by both sides; revalidate whichever thread view is open.
   revalidatePath(`/student/messages/${threadId}`);
+  revalidatePath(`/teacher/messages/${threadId}`);
 }
 
 // ── Reviews ──────────────────────────────────────────────────────────────

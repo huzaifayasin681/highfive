@@ -13,6 +13,7 @@ export type ProfileData = {
   mode: string | null;
   location: string;
   photoUrl: string;
+  videoUrl: string;
   responseTime: string;
   subjects: string[];
 };
@@ -49,6 +50,45 @@ export default function ProfileBuilder({
 
       <Card title="Photo & basics">
         <Field label="Profile photo URL" name="photoUrl" type="url" defaultValue={data.photoUrl} placeholder="https://…" />
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">Intro Video</label>
+          
+          <div className="space-y-4 p-4 border border-slate-100 rounded-xl bg-slate-50/50">
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Option 1: YouTube Link</label>
+              <input
+                name="youtubeUrl"
+                type="url"
+                defaultValue={data.videoUrl?.includes("youtu") ? data.videoUrl : ""}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm bg-white"
+              />
+            </div>
+            
+            <div className="relative flex items-center py-2">
+              <div className="flex-grow border-t border-slate-200"></div>
+              <span className="flex-shrink-0 mx-4 text-slate-400 text-xs font-semibold uppercase">Or</span>
+              <div className="flex-grow border-t border-slate-200"></div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Option 2: Upload File (Max 5MB)</label>
+              <input
+                name="video"
+                type="file"
+                accept="video/*"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-highfive-blue hover:file:bg-emerald-100 cursor-pointer"
+              />
+            </div>
+          </div>
+
+          {data.videoUrl && (
+            <p className="text-xs text-emerald-600 mt-3 font-medium flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Current video: {data.videoUrl.includes("youtu") ? "YouTube Video" : data.videoUrl.split('/').pop()}
+            </p>
+          )}
+        </div>
         <Field label="Location" name="location" defaultValue={data.location} placeholder="e.g. Lahore, Pakistan" />
         <Field label="Typical response time" name="responseTime" defaultValue={data.responseTime} placeholder="e.g. within 1 hour" />
       </Card>

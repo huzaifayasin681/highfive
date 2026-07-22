@@ -11,6 +11,7 @@ import {
   FileText,
   ScrollText,
   Inbox,
+  Wallet,
 } from "lucide-react";
 
 const LINKS = [
@@ -18,6 +19,7 @@ const LINKS = [
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/verification", label: "Verification", icon: ShieldCheck },
   { href: "/admin/moderation", label: "Moderation", icon: Flag },
+  { href: "/admin/payments", label: "Payments", icon: Wallet },
   { href: "/admin/inbox", label: "Inbox", icon: Inbox },
   { href: "/admin/subjects", label: "Subjects", icon: BookMarked },
   { href: "/admin/content", label: "Content", icon: FileText },

@@ -19,3 +19,18 @@ export const registerSchema = z.object({
 
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
+
+// Simulated JazzCash / EasyPaisa wallet payment. Pakistani mobile numbers are
+// 11 digits starting "03" (e.g. 03001234567); the wallet PIN is 4–6 digits.
+export const paymentSchema = z.object({
+  paymentId: z.string().min(1),
+  method: z.enum(["jazzcash", "easypaisa"], {
+    message: "Choose a payment method",
+  }),
+  mobileNumber: z
+    .string()
+    .trim()
+    .regex(/^03\d{9}$/, "Enter a valid mobile number (e.g. 03001234567)"),
+});
+
+export type PaymentInput = z.infer<typeof paymentSchema>;

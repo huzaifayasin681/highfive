@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { GraduationCap } from "lucide-react";
 import { requireRole } from "@/lib/auth-helpers";
 import { getThreadsForUser } from "@/lib/messaging";
+import { isRegistrationPaid } from "@/lib/payments";
 import StudentNav from "@/components/student/StudentNav";
 import SignOutButton from "@/components/SignOutButton";
 
@@ -11,6 +13,13 @@ export default async function StudentLayout({
   children: React.ReactNode;
 }) {
   const user = await requireRole(["STUDENT", "ADMIN"]);
+
+  // Gate the student area behind the one-time registration fee. Admins (who may
+  // view student pages) are exempt.
+  if (user.role === "STUDENT" && !(await isRegistrationPaid(user.id))) {
+    redirect("/checkout/registration");
+  }
+
   const threads = await getThreadsForUser(user.id);
   const unread = threads.reduce((sum, t) => sum + t.unread, 0);
 

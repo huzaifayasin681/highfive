@@ -1,6 +1,7 @@
 import { GraduationCap } from "lucide-react";
 import { requireRole } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
+import { getThreadsForUser } from "@/lib/messaging";
 import TeacherNav from "@/components/teacher/TeacherNav";
 import SignOutButton from "@/components/SignOutButton";
 
@@ -10,7 +11,11 @@ export default async function TeacherLayout({
   children: React.ReactNode;
 }) {
   const user = await requireRole(["TEACHER", "ADMIN"]);
-  const openLeads = await prisma.requirement.count({ where: { status: "open" } });
+  const [openLeads, threads] = await Promise.all([
+    prisma.requirement.count({ where: { status: "open" } }),
+    getThreadsForUser(user.id),
+  ]);
+  const unread = threads.reduce((sum, t) => sum + t.unread, 0);
 
   return (
     <div className="bg-slate-50 min-h-[calc(100vh-4rem)]">
@@ -27,7 +32,7 @@ export default async function TeacherLayout({
                   <p className="text-xs text-slate-400">Teacher account</p>
                 </div>
               </div>
-              <TeacherNav leads={openLeads} />
+              <TeacherNav leads={openLeads} unread={unread} />
               <div className="mt-2 pt-2 border-t border-slate-100">
                 <SignOutButton />
               </div>

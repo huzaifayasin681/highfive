@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search, Inbox, MapPin, Wallet, Monitor, GraduationCap, Clock } from "lucide-react";
+import { Search, Inbox, MapPin, Wallet, Monitor, GraduationCap, Send } from "lucide-react";
 import type { Lead } from "@/lib/teacher";
+import { startConversation } from "@/app/student/actions";
 
 function timeAgo(iso: string) {
   const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
@@ -91,6 +92,13 @@ export default function LeadsBrowser({ leads }: { leads: Lead[] }) {
                     Posted by {l.studentName} · {timeAgo(l.createdAt)}
                   </p>
                 </div>
+                <form action={startConversation}>
+                  <input type="hidden" name="targetId" value={l.studentId} />
+                  <input type="hidden" name="content" value={`Hi ${l.studentName}, I can help you with ${l.subject}.`} />
+                  <button type="submit" className="flex items-center gap-1.5 px-3 py-1.5 bg-highfive-blue hover:bg-emerald-800 text-white rounded-lg text-xs font-bold transition-colors">
+                    <Send className="w-3.5 h-3.5" /> Message
+                  </button>
+                </form>
               </div>
               <p className="text-slate-600 text-sm leading-relaxed">{l.description}</p>
               <div className="flex flex-wrap gap-4 mt-3 text-xs text-slate-500">

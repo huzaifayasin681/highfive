@@ -24,6 +24,7 @@ export default async function TeacherProfilePage() {
     mode: profile?.mode ?? null,
     location: profile?.location ?? "",
     photoUrl: profile?.photoUrl ?? "",
+    videoUrl: profile?.videoUrl ?? "",
     responseTime: profile?.responseTime ?? "",
     subjects: profile?.subjects.map((s) => s.name) ?? [],
   };

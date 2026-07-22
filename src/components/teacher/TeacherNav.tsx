@@ -2,17 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, UserCog, Inbox, Star, Settings } from "lucide-react";
+import { LayoutDashboard, UserCog, Inbox, MessageSquare, Star, CreditCard, Settings } from "lucide-react";
 
 const LINKS = [
   { href: "/teacher", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/teacher/profile", label: "My Profile", icon: UserCog },
   { href: "/teacher/leads", label: "Student Leads", icon: Inbox },
+  { href: "/teacher/messages", label: "Messages", icon: MessageSquare },
   { href: "/teacher/reviews", label: "Reviews", icon: Star },
+  { href: "/teacher/subscription", label: "Subscription", icon: CreditCard },
   { href: "/teacher/settings", label: "Settings", icon: Settings },
 ];
 
-export default function TeacherNav({ leads = 0 }: { leads?: number }) {
+export default function TeacherNav({ leads = 0, unread = 0 }: { leads?: number; unread?: number }) {
   const pathname = usePathname();
   return (
     <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
@@ -31,6 +33,11 @@ export default function TeacherNav({ leads = 0 }: { leads?: number }) {
             {l.href === "/teacher/leads" && leads > 0 && (
               <span className="ml-auto bg-emerald-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5">
                 {leads}
+              </span>
+            )}
+            {l.href === "/teacher/messages" && unread > 0 && (
+              <span className="ml-auto bg-rose-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5">
+                {unread}
               </span>
             )}
           </Link>

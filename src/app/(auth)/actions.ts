@@ -86,11 +86,16 @@ export async function registerAction(
     },
   });
 
+  // New students must pay the one-time registration fee before their dashboard
+  // unlocks; teachers go straight through.
+  const redirectTo =
+    role === "STUDENT" ? "/checkout/registration" : POST_LOGIN_PATH;
+
   try {
     await signIn("credentials", {
       email: normalizedEmail,
       password,
-      redirectTo: POST_LOGIN_PATH,
+      redirectTo,
     });
   } catch (error) {
     if (isRedirectError(error)) throw error;

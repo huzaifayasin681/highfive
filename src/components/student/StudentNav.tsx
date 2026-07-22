@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ClipboardList, MessageSquare, Star, Settings } from "lucide-react";
+import { LayoutDashboard, ClipboardList, MessageSquare, Star, Wallet, Settings } from "lucide-react";
 
 const LINKS = [
   { href: "/student", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/student/requirements", label: "My Requirements", icon: ClipboardList },
   { href: "/student/messages", label: "Messages", icon: MessageSquare },
   { href: "/student/reviews", label: "My Reviews", icon: Star },
+  { href: "/student/payments", label: "Payments", icon: Wallet },
   { href: "/student/settings", label: "Settings", icon: Settings },
 ];
 

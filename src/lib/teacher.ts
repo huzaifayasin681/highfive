@@ -41,6 +41,7 @@ export type Lead = {
   location: string | null;
   description: string;
   studentName: string;
+  studentId: string;
   createdAt: string;
 };
 
@@ -60,6 +61,7 @@ export async function getOpenLeads(): Promise<Lead[]> {
     location: r.location,
     description: r.description,
     studentName: r.student.name,
+    studentId: r.studentId,
     createdAt: r.createdAt.toISOString(),
   }));
 }

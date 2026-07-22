@@ -17,6 +17,7 @@ export interface Tutor {
   languages?: string[];
   studentsTaught?: number;
   mode?: 'online' | 'in-person' | 'both';
+  videoUrl?: string;
 }
 
 export interface GlobalState {

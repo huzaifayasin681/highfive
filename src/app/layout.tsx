@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { auth } from "@/auth";
 import Providers from "@/components/Providers";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -23,18 +24,19 @@ export const metadata: Metadata = {
   description: "Find expert tutors. Learn smarter. Teach confidently.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
   return (
     <html
       lang="en"
       className={`${jakarta.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-background text-foreground">
-        <Providers>
+        <Providers session={session}>
           <Navbar />
           <ContactModal />
           <main className="flex-grow">

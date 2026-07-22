@@ -14,6 +14,7 @@ type TeacherRow = {
     location: string | null;
     mode: string | null;
     photoUrl: string | null;
+    videoUrl: string | null;
     verified: boolean;
     rating: number;
     reviewsCount: number;
@@ -52,6 +53,7 @@ export function mapTeacher(row: TeacherRow): Tutor {
     experienceYears: p?.experienceYears ?? undefined,
     studentsTaught: p?.studentsTaught,
     mode: (p?.mode as Tutor["mode"]) ?? undefined,
+    videoUrl: p?.videoUrl ?? undefined,
   };
 }
 

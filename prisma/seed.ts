@@ -1,11 +1,14 @@
 import "dotenv/config";
 import bcrypt from "bcryptjs";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL ?? "file:./dev.db",
+const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
+const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 const SUBJECTS = [
@@ -62,6 +65,7 @@ async function main() {
       email: "student@highfive.test",
       passwordHash,
       emailVerified: true,
+      registrationPaid: true,
       studentProfile: { create: { location: "Lahore, Pakistan" } },
     },
   });
@@ -118,6 +122,7 @@ async function main() {
   await seedThreads();
   await seedContactMessages();
   await seedAuditLog();
+  await seedPayments();
 
   console.log("\nSeed complete. All accounts use password: password123");
 }
@@ -380,6 +385,7 @@ async function seedStudents(passwordHash: string) {
         email,
         passwordHash,
         emailVerified: true,
+        registrationPaid: true,
         image: `https://i.pravatar.cc/100?u=${encodeURIComponent(email)}`,
         studentProfile: { create: { location: `${s.city}, Pakistan` } },
       },
@@ -581,6 +587,110 @@ async function seedAuditLog() {
     });
   }
   console.log(`  ✓ ${teachers.length} audit log entries`);
+}
+
+function paymentRef() {
+  return `HF-${Math.random().toString(36).slice(2, 12).toUpperCase()}`;
+}
+
+async function seedPayments() {
+  const existing = await prisma.payment.count();
+  if (existing > 0) {
+    console.log("  • payments already present; skipping");
+    return;
+  }
+
+  const sara = await prisma.user.findUnique({ where: { email: "student@highfive.test" } });
+  const ayesha = await prisma.user.findUnique({ where: { email: "teacher@highfive.test" } });
+  const bilal = await prisma.user.findUnique({ where: { email: emailFor("Bilal Ahmed Qureshi") } });
+  if (!sara || !ayesha) return;
+
+  const day = 86_400_000;
+  const records: {
+    userId: string;
+    type: string;
+    description: string;
+    amount: number;
+    status: string;
+    method: string | null;
+    targetId: string | null;
+    daysAgo: number;
+  }[] = [
+    {
+      userId: sara.id,
+      type: "REGISTRATION",
+      description: "Student registration fee",
+      amount: 500,
+      status: "paid",
+      method: "jazzcash",
+      targetId: null,
+      daysAgo: 40,
+    },
+    {
+      userId: sara.id,
+      type: "UNLOCK_TUTOR",
+      description: `Unlock contact with ${ayesha.name}`,
+      amount: 200,
+      status: "paid",
+      method: "easypaisa",
+      targetId: ayesha.id,
+      daysAgo: 12,
+    },
+    // Active subscription so the demo teacher can browse leads immediately.
+    {
+      userId: ayesha.id,
+      type: "TEACHER_SUBSCRIPTION",
+      description: "Teacher subscription (30 days)",
+      amount: 2000,
+      status: "paid",
+      method: "jazzcash",
+      targetId: null,
+      daysAgo: 3,
+    },
+  ];
+
+  if (bilal) {
+    records.push({
+      userId: sara.id,
+      type: "UNLOCK_TUTOR",
+      description: `Unlock contact with ${bilal.name}`,
+      amount: 200,
+      status: "paid",
+      method: "jazzcash",
+      targetId: bilal.id,
+      daysAgo: 8,
+    });
+    records.push({
+      userId: sara.id,
+      type: "SESSION_BOOKING",
+      description: `Session booking with ${bilal.name}`,
+      amount: 1800,
+      status: "paid",
+      method: "easypaisa",
+      targetId: bilal.id,
+      daysAgo: 5,
+    });
+  }
+
+  for (const r of records) {
+    const at = new Date(Date.now() - r.daysAgo * day);
+    await prisma.payment.create({
+      data: {
+        userId: r.userId,
+        type: r.type,
+        description: r.description,
+        amount: r.amount,
+        status: r.status,
+        method: r.method,
+        mobileNumber: "03001234567",
+        reference: paymentRef(),
+        targetId: r.targetId,
+        createdAt: at,
+        paidAt: r.status === "paid" ? at : null,
+      },
+    });
+  }
+  console.log(`  ✓ ${records.length} payments`);
 }
 
 main()

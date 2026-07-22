@@ -13,10 +13,16 @@ import {
 import { getTeacherProfile } from "@/lib/queries";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
+import { hasUnlockedTutor, PRICES } from "@/lib/payments";
 import ContactWidget from "@/components/tutor/ContactWidget";
 import ReviewSection from "@/components/tutor/ReviewSection";
 
 export const dynamic = "force-dynamic";
+
+function getYoutubeId(url: string) {
+  const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+  return match ? match[1] : null;
+}
 
 function stars(n: number) {
   return Array.from({ length: 5 }, (_, i) => (
@@ -47,6 +53,12 @@ export default async function TutorProfilePage({
           where: { authorId_targetId: { authorId: viewer.id, targetId: tutor.id } },
         })
       : null;
+
+  // Students must pay a one-time fee to unlock a tutor's contact. Non-students
+  // (admins/teachers) and the tutor themselves are always "unlocked".
+  const unlocked =
+    !!viewer &&
+    (viewer.role !== "STUDENT" || (await hasUnlockedTutor(viewer.id, tutor.id)));
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -153,15 +165,36 @@ export default async function TutorProfilePage({
               <h2 className="text-lg font-bold text-slate-900 mb-5 flex items-center gap-2">
                 <Play className="w-5 h-5 text-highfive-blue" /> Introduction Video
               </h2>
-              <div className="aspect-video bg-gradient-to-br from-slate-800 to-emerald-950 rounded-xl overflow-hidden relative cursor-pointer group">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 group-hover:scale-110 transition-all duration-200">
-                    <Play className="w-7 h-7 text-white fill-white ml-0.5" />
-                  </div>
-                </div>
-                <div className="absolute bottom-4 left-4 text-white text-sm font-medium opacity-70">
-                  Introduction by {tutor.name.split(" ")[0]}
-                </div>
+              <div className="aspect-video bg-gradient-to-br from-slate-800 to-emerald-950 rounded-xl overflow-hidden relative group">
+                {tutor.videoUrl ? (
+                  getYoutubeId(tutor.videoUrl) ? (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${getYoutubeId(tutor.videoUrl)}`}
+                      className="w-full h-full border-0 absolute inset-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <video
+                      src={tutor.videoUrl}
+                      controls
+                      className="w-full h-full object-cover absolute inset-0"
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  )
+                ) : (
+                  <>
+                    <div className="absolute inset-0 flex items-center justify-center cursor-pointer">
+                      <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 group-hover:scale-110 transition-all duration-200">
+                        <Play className="w-7 h-7 text-white fill-white ml-0.5" />
+                      </div>
+                    </div>
+                    <div className="absolute bottom-4 left-4 text-white text-sm font-medium opacity-70">
+                      Introduction by {tutor.name.split(" ")[0]}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -185,6 +218,8 @@ export default async function TutorProfilePage({
               rate={tutor.rate}
               rating={tutor.rating}
               isLoggedIn={!!viewer}
+              unlocked={unlocked}
+              unlockPrice={PRICES.UNLOCK_TUTOR}
             />
           </div>
         </div>

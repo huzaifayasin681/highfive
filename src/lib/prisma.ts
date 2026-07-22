@@ -1,5 +1,6 @@
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "@/generated/prisma/client";
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 // Reuse a single PrismaClient instance across hot-reloads in development to
 // avoid exhausting database connections.
@@ -8,11 +9,11 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createClient() {
-  // Prisma 7 uses driver adapters (no Rust engine). SQLite for dev — swap the
-  // adapter (e.g. @prisma/adapter-pg) when moving to Postgres.
-  const adapter = new PrismaBetterSqlite3({
-    url: process.env.DATABASE_URL ?? "file:./dev.db",
+  const pool = new Pool({ 
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
   });
+  const adapter = new PrismaPg(pool);
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
