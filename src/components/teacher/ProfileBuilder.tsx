@@ -85,7 +85,7 @@ export default function ProfileBuilder({
           {data.videoUrl && (
             <p className="text-xs text-emerald-600 mt-3 font-medium flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              Current video: {data.videoUrl.includes("youtu") ? "YouTube Video" : data.videoUrl.split('/').pop()}
+              Current video: {data.videoUrl.includes("youtu") ? "YouTube Video" : data.videoUrl.startsWith("data:") ? "Uploaded Video" : data.videoUrl.split('/').pop()}
             </p>
           )}
         </div>

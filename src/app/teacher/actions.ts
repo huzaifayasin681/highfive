@@ -3,8 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import fs from "fs/promises";
-import path from "path";
 import { requireRole, requireUser } from "@/lib/auth-helpers";
 import { MIN_BIO_LENGTH } from "@/lib/teacher";
 
@@ -67,13 +65,9 @@ export async function updateTeacherProfile(
     if (videoFile.size > 5 * 1024 * 1024) {
       return { error: "Video must be less than 5MB" };
     }
-    const ext = path.extname(videoFile.name) || ".mp4";
-    const filename = `${user.id}-${Date.now()}${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "videos");
-    await fs.mkdir(uploadDir, { recursive: true });
     const buffer = Buffer.from(await videoFile.arrayBuffer());
-    await fs.writeFile(path.join(uploadDir, filename), buffer);
-    base.videoUrl = `/uploads/videos/${filename}`;
+    const mimeType = videoFile.type || "video/mp4";
+    base.videoUrl = `data:${mimeType};base64,${buffer.toString("base64")}`;
   }
 
   const subjectRefs = subjects.map((s) => ({ id: s.id }));
