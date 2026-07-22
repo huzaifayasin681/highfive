@@ -2,8 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import fs from "fs/promises";
-import path from "path";
+
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, requireRole } from "@/lib/auth-helpers";
 import { paymentSchema } from "@/lib/validation";
@@ -169,13 +168,9 @@ export async function confirmPayment(
     return { error: "Receipt image must be less than 5MB" };
   }
 
-  const ext = path.extname(receiptFile.name) || ".jpg";
-  const filename = `${user.id}-${Date.now()}${ext}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "receipts");
-  await fs.mkdir(uploadDir, { recursive: true });
   const buffer = Buffer.from(await receiptFile.arrayBuffer());
-  await fs.writeFile(path.join(uploadDir, filename), buffer);
-  const receiptUrl = `/uploads/receipts/${filename}`;
+  const mimeType = receiptFile.type || "image/jpeg";
+  const receiptUrl = `data:${mimeType};base64,${buffer.toString("base64")}`;
 
   const { paymentId, method, mobileNumber } = parsed.data;
   const result = await submitPaymentForReview(paymentId, user.id, method as any, mobileNumber, receiptUrl);
