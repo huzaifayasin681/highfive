@@ -90,6 +90,26 @@ export default async function CheckoutPage({
                   <Receipt className="w-4 h-4" /> View all receipts
                 </Link>
               </div>
+            ) : payment.status === "under_review" ? (
+              <div className="space-y-6 text-center">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-3">
+                    <Receipt className="w-9 h-9 text-blue-600" />
+                  </div>
+                  <div className="text-2xl font-extrabold text-slate-900">Receipt Submitted</div>
+                  <p className="text-slate-500 text-sm mt-2">
+                    Your payment receipt is under review by our admin team. We will notify you once it is approved.
+                  </p>
+                </div>
+                <div className="pt-4 border-t border-slate-100">
+                  <Link
+                    href="/"
+                    className="w-full bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center"
+                  >
+                    Return to Homepage
+                  </Link>
+                </div>
+              </div>
             ) : (
               <PaymentGateway
                 paymentId={payment.id}

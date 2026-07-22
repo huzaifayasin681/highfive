@@ -37,7 +37,7 @@ async function findOrCreatePending(input: {
       userId: input.userId,
       type: input.type,
       targetId: input.targetId ?? null,
-      status: "pending",
+      status: { in: ["pending", "under_review"] },
     },
     orderBy: { createdAt: "desc" },
   });
