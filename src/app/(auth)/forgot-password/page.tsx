@@ -2,13 +2,17 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
-import { GraduationCap, ArrowLeft } from "lucide-react";
-import { forgotPasswordAction, type AuthFormState } from "../actions";
+import { GraduationCap, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { forgotPasswordAction, resetPasswordWithRequestAction, type AuthFormState } from "../actions";
 
 const initialState: AuthFormState = {};
 
 export default function ForgotPasswordPage() {
-  const [state, formAction, pending] = useActionState(forgotPasswordAction, initialState);
+  const [state, formAction, pending] = useActionState(
+    (state: AuthFormState, payload: FormData) => 
+      state.step === "NEW_PASSWORD" ? resetPasswordWithRequestAction(state, payload) : forgotPasswordAction(state, payload), 
+    initialState
+  );
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 bg-slate-50">
@@ -23,20 +27,58 @@ export default function ForgotPasswordPage() {
               <span className="font-extrabold text-lg">HighFive Tutors</span>
             </div>
             <h1 className="text-2xl font-extrabold">Reset Password</h1>
-            <p className="text-emerald-200 text-sm mt-1">Enter your email to receive a reset link.</p>
+            <p className="text-emerald-200 text-sm mt-1">
+              {state.step === "NEW_PASSWORD" ? "Enter your new password below." : "Enter your email to request a reset from the admin."}
+            </p>
           </div>
 
-          <form action={formAction} className="p-8 space-y-4">
+          <form action={formAction as unknown as string} className="p-8 space-y-4">
             {state.error && (
               <div className="bg-red-50 text-red-700 text-sm rounded-xl px-4 py-3 border border-red-100">
                 {state.error}
               </div>
             )}
             
-            {state.ok ? (
+            {state.step === "DONE" ? (
+              <div className="bg-emerald-50 text-emerald-700 text-sm rounded-xl px-4 py-4 border border-emerald-100 text-center space-y-3">
+                <CheckCircle2 className="w-8 h-8 mx-auto text-emerald-600" />
+                <p className="font-bold mb-1">Success!</p>
+                <p>{state.message}</p>
+                <Link href="/login" className="inline-block mt-2 bg-highfive-blue text-white font-bold py-2 px-6 rounded-xl hover:bg-emerald-800 transition-colors">
+                  Go to Login
+                </Link>
+              </div>
+            ) : state.step === "NEW_PASSWORD" ? (
+              <>
+                <input type="hidden" name="email" value={state.email} />
+                <div>
+                  <label htmlFor="newPassword" className="block text-sm font-medium text-slate-700 mb-1.5">
+                    New Password
+                  </label>
+                  <input
+                    id="newPassword"
+                    name="newPassword"
+                    type="password"
+                    required
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm"
+                  />
+                  {state.fieldErrors?.newPassword && (
+                    <p className="text-red-600 text-xs mt-1">{state.fieldErrors.newPassword}</p>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={pending}
+                  className="w-full bg-highfive-blue text-white font-bold py-3.5 rounded-xl hover:bg-emerald-800 transition-colors disabled:opacity-60"
+                >
+                  {pending ? "Saving..." : "Save new password"}
+                </button>
+              </>
+            ) : state.ok ? (
               <div className="bg-emerald-50 text-emerald-700 text-sm rounded-xl px-4 py-4 border border-emerald-100 text-center">
-                <p className="font-bold mb-1">Check your inbox</p>
-                <p>If an account exists for that email, we have sent password reset instructions.</p>
+                <p className="font-bold mb-1">Request Sent</p>
+                <p>{state.message}</p>
               </div>
             ) : (
               <>

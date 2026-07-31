@@ -10,6 +10,9 @@ import { loginSchema, registerSchema } from "@/lib/validation";
 export type AuthFormState = {
   error?: string;
   ok?: boolean;
+  step?: string;
+  email?: string;
+  message?: string;
   fieldErrors?: Record<string, string>;
 };
 
@@ -127,17 +130,69 @@ export async function forgotPasswordAction(
     return { fieldErrors: { email: "Please enter a valid email address." } };
   }
   
-  // In a real application, you would:
-  // 1. Check if the user exists
-  // 2. Generate a secure reset token
-  // 3. Save it to VerificationToken table
-  // 4. Send an email with the link (e.g., Resend, SendGrid)
-  
-  // For this implementation without an email provider, we simulate success
-  // to prevent email enumeration attacks and satisfy the UI requirement.
-  
-  // Artificial delay to prevent timing attacks and simulate network request
-  await new Promise(resolve => setTimeout(resolve, 800));
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    // Return fake success for non-existent user
+    return { ok: true, message: "Your reset request has been sent to the admin. Please check back here later." };
+  }
 
-  return { ok: true };
+  const existingRequest = await prisma.passwordResetRequest.findUnique({
+    where: { userId: user.id }
+  });
+
+  if (existingRequest?.status === "APPROVED") {
+    // Show the new password form
+    return { ok: true, step: "NEW_PASSWORD", email: user.email };
+  } else if (existingRequest?.status === "PENDING") {
+    return { ok: true, message: "Your request is still pending admin approval." };
+  }
+
+  // Create new request
+  await prisma.passwordResetRequest.create({
+    data: { userId: user.id }
+  });
+
+  return { ok: true, message: "Your reset request has been sent to the admin. Please check back here later." };
+}
+
+import bcryptjs from "bcryptjs";
+
+export async function resetPasswordWithRequestAction(
+  _prev: AuthFormState,
+  formData: FormData
+): Promise<AuthFormState> {
+  const email = formData.get("email");
+  const newPassword = formData.get("newPassword");
+  
+  if (!email || typeof email !== "string") {
+    return { error: "Missing email" };
+  }
+  if (!newPassword || typeof newPassword !== "string" || newPassword.length < 6) {
+    return { fieldErrors: { newPassword: "Password must be at least 6 characters" }, ok: true, step: "NEW_PASSWORD", email };
+  }
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return { error: "User not found" };
+
+  const existingRequest = await prisma.passwordResetRequest.findUnique({
+    where: { userId: user.id }
+  });
+
+  if (existingRequest?.status !== "APPROVED") {
+    return { error: "You do not have an approved password reset request." };
+  }
+
+  const passwordHash = await bcryptjs.hash(newPassword, 10);
+
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash },
+    }),
+    prisma.passwordResetRequest.delete({
+      where: { userId: user.id },
+    }),
+  ]);
+
+  return { ok: true, step: "DONE", message: "Your password has been successfully reset. You can now log in." };
 }

@@ -13,11 +13,13 @@ import {
   Inbox,
   Wallet,
   Settings,
+  KeyRound,
 } from "lucide-react";
 
 const LINKS = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/password-resets", label: "Password Resets", icon: KeyRound },
   { href: "/admin/verification", label: "Verification", icon: ShieldCheck },
   { href: "/admin/moderation", label: "Moderation", icon: Flag },
   { href: "/admin/payments", label: "Payments", icon: Wallet },

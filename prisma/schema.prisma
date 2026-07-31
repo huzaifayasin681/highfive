@@ -41,6 +41,7 @@ model User {
   reviewsReceived Review[]        @relation("ReviewTarget")
   auditLogs       AuditLog[]      @relation("AuditActor")
   payments        Payment[]       @relation("UserPayments")
+  passwordResetRequest PasswordResetRequest?
 
   // Auth.js (optional — enables OAuth / db sessions later without a migration)
   accounts Account[]
@@ -239,4 +240,13 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model PasswordResetRequest {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    String   @default("PENDING") // PENDING, APPROVED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
