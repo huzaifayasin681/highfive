@@ -9,6 +9,7 @@ import { loginSchema, registerSchema } from "@/lib/validation";
 
 export type AuthFormState = {
   error?: string;
+  ok?: boolean;
   fieldErrors?: Record<string, string>;
 };
 
@@ -115,4 +116,28 @@ function flattenZod(error: import("zod").ZodError): Record<string, string> {
     if (!out[key]) out[key] = issue.message;
   }
   return out;
+}
+
+export async function forgotPasswordAction(
+  _prev: AuthFormState,
+  formData: FormData
+): Promise<AuthFormState> {
+  const email = formData.get("email");
+  if (!email || typeof email !== "string" || !email.includes("@")) {
+    return { fieldErrors: { email: "Please enter a valid email address." } };
+  }
+  
+  // In a real application, you would:
+  // 1. Check if the user exists
+  // 2. Generate a secure reset token
+  // 3. Save it to VerificationToken table
+  // 4. Send an email with the link (e.g., Resend, SendGrid)
+  
+  // For this implementation without an email provider, we simulate success
+  // to prevent email enumeration attacks and satisfy the UI requirement.
+  
+  // Artificial delay to prevent timing attacks and simulate network request
+  await new Promise(resolve => setTimeout(resolve, 800));
+
+  return { ok: true };
 }

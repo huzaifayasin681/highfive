@@ -37,13 +37,28 @@ export default function LoginPage() {
               autoComplete="email"
               error={state.fieldErrors?.email}
             />
-            <Field
-              label="Password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              error={state.fieldErrors?.password}
-            />
+            
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+                  Password
+                </label>
+                <Link href="/forgot-password" className="text-xs text-highfive-blue font-semibold hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm"
+              />
+              {state.fieldErrors?.password && (
+                <p className="text-red-600 text-xs mt-1">{state.fieldErrors.password}</p>
+              )}
+            </div>
 
             <button
               type="submit"
@@ -60,12 +75,6 @@ export default function LoginPage() {
               </Link>
             </p>
           </form>
-        </div>
-
-        <p className="text-center text-xs text-slate-400 mt-6">
-          Demo accounts (password <span className="font-mono">password123</span>):
-          admin@ / teacher@ / student@highfive.test
-        </p>
       </div>
     </div>
   );
