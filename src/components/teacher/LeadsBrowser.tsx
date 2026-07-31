@@ -89,7 +89,7 @@ export default function LeadsBrowser({ leads }: { leads: Lead[] }) {
                     )}
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Posted by {l.studentName} · {timeAgo(l.createdAt)}
+                    Posted by {l.studentName} {l.studentPhone ? `(${l.studentPhone})` : ""} · {timeAgo(l.createdAt)}
                   </p>
                 </div>
                 <form action={startConversation}>

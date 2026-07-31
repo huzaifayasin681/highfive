@@ -42,6 +42,7 @@ export type Lead = {
   description: string;
   studentName: string;
   studentId: string;
+  studentPhone: string | null;
   createdAt: string;
 };
 
@@ -49,7 +50,7 @@ export type Lead = {
 export async function getOpenLeads(): Promise<Lead[]> {
   const rows = await prisma.requirement.findMany({
     where: { status: "open" },
-    include: { student: { select: { name: true } } },
+    include: { student: { select: { name: true, phone: true } } },
     orderBy: { createdAt: "desc" },
   });
   return rows.map((r) => ({
@@ -62,6 +63,7 @@ export async function getOpenLeads(): Promise<Lead[]> {
     description: r.description,
     studentName: r.student.name,
     studentId: r.studentId,
+    studentPhone: r.student.phone,
     createdAt: r.createdAt.toISOString(),
   }));
 }

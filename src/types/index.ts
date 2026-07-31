@@ -2,6 +2,7 @@ export interface Tutor {
   id: string;
   name: string;
   avatar: string;
+  phone?: string | null;
   subjects: string[];
   qualifications: string[];
   rate: number;

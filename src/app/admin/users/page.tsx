@@ -1,4 +1,4 @@
-import { Search, Ban, CheckCircle2, Trash2 } from "lucide-react";
+import { Search, Ban, CheckCircle2, Trash2, Edit } from "lucide-react";
 import { requireRole } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 import { setUserStatus, deleteUser } from "@/app/admin/actions";
@@ -109,6 +109,12 @@ export default async function AdminUsersPage({
                           <span className="text-xs text-slate-400">that&apos;s you</span>
                         ) : (
                           <>
+                            <a
+                              href={`/admin/users/${u.id}/edit`}
+                              className="flex items-center gap-1 text-xs font-semibold border border-slate-200 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+                            >
+                              <Edit className="w-3.5 h-3.5 text-highfive-blue" /> Edit
+                            </a>
                             <form action={setUserStatus}>
                               <input type="hidden" name="id" value={u.id} />
                               <input type="hidden" name="status" value={u.status === "active" ? "suspended" : "active"} />

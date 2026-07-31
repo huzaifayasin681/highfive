@@ -12,6 +12,7 @@ import {
   ScrollText,
   Inbox,
   Wallet,
+  Settings,
 } from "lucide-react";
 
 const LINKS = [
@@ -24,6 +25,7 @@ const LINKS = [
   { href: "/admin/subjects", label: "Subjects", icon: BookMarked },
   { href: "/admin/content", label: "Content", icon: FileText },
   { href: "/admin/audit", label: "Audit Log", icon: ScrollText },
+  { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 export default function AdminNav({ pending = 0, unreadContact = 0 }: { pending?: number; unreadContact?: number }) {

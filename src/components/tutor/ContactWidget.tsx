@@ -12,6 +12,7 @@ export default function ContactWidget({
   targetName,
   rate,
   rating,
+  phone,
   isLoggedIn,
   unlocked,
   unlockPrice,
@@ -20,6 +21,7 @@ export default function ContactWidget({
   targetName: string;
   rate: number;
   rating: number;
+  phone?: string | null;
   isLoggedIn: boolean;
   unlocked: boolean;
   unlockPrice: number;
@@ -135,9 +137,17 @@ export default function ContactWidget({
             )}
 
             {isLoggedIn && unlocked && (
-              <p className="text-center text-xs text-success-green font-semibold flex items-center justify-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Contact unlocked
-              </p>
+              <div className="space-y-3">
+                <p className="text-center text-xs text-success-green font-semibold flex items-center justify-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Contact unlocked
+                </p>
+                {phone && (
+                  <div className="bg-emerald-50 rounded-xl p-3 text-center border border-emerald-100">
+                    <p className="text-xs text-emerald-600 font-bold mb-1">Phone Number</p>
+                    <p className="font-mono text-emerald-800 font-bold">{phone}</p>
+                  </div>
+                )}
+              </div>
             )}
           </>
         )}

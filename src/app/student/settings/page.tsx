@@ -1,6 +1,7 @@
 import { requireRole } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 import SettingsForm from "@/components/student/SettingsForm";
+import UpdatePasswordForm from "@/components/UpdatePasswordForm";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,10 @@ export default async function StudentSettingsPage() {
         phone={user?.phone ?? ""}
         location={user?.studentProfile?.location ?? ""}
       />
+      <div>
+        <h2 className="text-xl font-bold text-slate-900 mt-8 mb-4">Security</h2>
+        <UpdatePasswordForm />
+      </div>
     </div>
   );
 }

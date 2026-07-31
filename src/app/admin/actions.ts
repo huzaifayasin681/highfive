@@ -6,6 +6,27 @@ import { requireRole } from "@/lib/auth-helpers";
 import { logAudit } from "@/lib/admin";
 
 // ── Users ────────────────────────────────────────────────────────────────
+import { redirect } from "next/navigation";
+
+export async function adminUpdateUser(formData: FormData): Promise<void> {
+  const admin = await requireRole("ADMIN");
+  const id = String(formData.get("id") ?? "");
+  const name = String(formData.get("name") ?? "");
+  const email = String(formData.get("email") ?? "").toLowerCase();
+  const phone = String(formData.get("phone") ?? "");
+  const role = String(formData.get("role") ?? "");
+  
+  if (!id || !name || !email || !role) return;
+
+  await prisma.user.update({
+    where: { id },
+    data: { name, email, phone: phone || null, role },
+  });
+  
+  await logAudit(admin.id, "USER_EDITED", "User", id);
+  revalidatePath("/admin/users");
+  redirect("/admin/users");
+}
 
 export async function setUserStatus(formData: FormData): Promise<void> {
   const admin = await requireRole("ADMIN");

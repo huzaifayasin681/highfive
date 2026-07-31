@@ -6,6 +6,7 @@ type TeacherRow = {
   id: string;
   name: string;
   image: string | null;
+  phone: string | null;
   teacherProfile: {
     bio: string | null;
     qualifications: string | null;
@@ -36,6 +37,7 @@ export function mapTeacher(row: TeacherRow): Tutor {
   return {
     id: row.id, // the User id — used as the contact/review target
     name: row.name,
+    phone: row.phone,
     avatar: p?.photoUrl || row.image || fallbackAvatar(row.id),
     subjects: p?.subjects.map((s) => s.name) ?? [],
     qualifications: p?.qualifications

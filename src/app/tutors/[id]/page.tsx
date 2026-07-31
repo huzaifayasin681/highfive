@@ -217,6 +217,7 @@ export default async function TutorProfilePage({
               targetName={tutor.name}
               rate={tutor.rate}
               rating={tutor.rating}
+              phone={tutor.phone}
               isLoggedIn={!!viewer}
               unlocked={unlocked}
               unlockPrice={PRICES.UNLOCK_TUTOR}
