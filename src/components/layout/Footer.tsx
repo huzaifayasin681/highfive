@@ -50,11 +50,11 @@ export default function Footer() {
             <div className="space-y-2.5 text-sm mb-6">
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <span>+92 300 1234567</span>
+                <span>0300-7511624</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <span>support@highfive.pk</span>
+                <span>support.highfive@gmail.com</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <MapPin className="w-4 h-4 text-emerald-400 flex-shrink-0" />

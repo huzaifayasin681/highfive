@@ -79,7 +79,7 @@ export default async function TutorProfilePage({
                 <div className="relative flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={tutor.avatar}
+                    src={tutor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(tutor.name)}&background=random&size=200`}
                     alt={tutor.name}
                     className="w-28 h-28 rounded-2xl border-4 border-white shadow-lg object-cover"
                   />

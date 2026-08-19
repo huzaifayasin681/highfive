@@ -10,6 +10,7 @@ const initialState: AuthFormState = {};
 export default function RegisterPage() {
   const [role, setRole] = useState<"STUDENT" | "TEACHER">("STUDENT");
   const [state, formAction, pending] = useActionState(registerAction, initialState);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 bg-slate-50">
@@ -60,14 +61,33 @@ export default function RegisterPage() {
 
             <Field label="Full name" name="name" type="text" autoComplete="name" error={state.fieldErrors?.name} />
             <Field label="Email address" name="email" type="email" autoComplete="email" error={state.fieldErrors?.email} />
-            <Field
-              label="Password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              error={state.fieldErrors?.password}
-              hint="At least 8 characters."
-            />
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1.5">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+              {state.fieldErrors?.password ? (
+                <p className="text-red-600 text-xs mt-1">{state.fieldErrors.password}</p>
+              ) : (
+                <p className="text-slate-400 text-xs mt-1">At least 8 characters.</p>
+              )}
+            </div>
 
             <button
               type="submit"

@@ -75,9 +75,9 @@ export default function ContactModal() {
                 ) : (
                   <input type="text" placeholder="Subjects you can teach" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
                 )}
-                <button type="submit" className="w-full bg-highfive-blue text-white font-bold py-3.5 rounded-xl hover:bg-emerald-800 transition-colors flex items-center justify-center gap-2">
-                  <Send className="w-4 h-4" /> Submit Enquiry
-                </button>
+                <a href="tel:0300-7511624" className="w-full bg-highfive-blue text-white font-bold py-3.5 rounded-xl hover:bg-emerald-800 transition-colors flex items-center justify-center gap-2">
+                  <Send className="w-4 h-4" /> Call 0300-7511624
+                </a>
               </form>
             </>
           )}

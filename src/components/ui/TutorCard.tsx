@@ -15,7 +15,7 @@ export default function TutorCard({ tutor }: { tutor: Tutor }) {
         <div className="flex gap-4 mb-4">
           <div className="relative flex-shrink-0">
             <img
-              src={tutor.avatar}
+              src={tutor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(tutor.name)}&background=random`}
               alt={tutor.name}
               className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-100 shadow-sm"
             />

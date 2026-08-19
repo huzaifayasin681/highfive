@@ -91,8 +91,11 @@ export default function PaymentGateway({
       {/* Wallet credentials */}
       <div className="space-y-4">
         <div>
+          <p className="text-sm font-semibold text-slate-700 mb-2">
+            Please send your payment to: <span className="font-extrabold text-highfive-blue bg-blue-50 px-2 py-1 rounded">0300-7511624</span> via {active.name}
+          </p>
           <label htmlFor="mobileNumber" className="block text-sm font-medium text-slate-700 mb-1.5">
-            {active.name} mobile number
+            Your {active.name} mobile number
           </label>
           <input
             id="mobileNumber"
