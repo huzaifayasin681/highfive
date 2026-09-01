@@ -13,6 +13,7 @@ import {
   completePayment,
   createPendingPayment,
   hasUnlockedTutor,
+  redeemPromoCode,
   submitPaymentForReview,
   type PaymentType,
   type PaymentMetadata,
@@ -184,4 +185,25 @@ export async function confirmPayment(
   if (result.targetId) revalidatePath(`/tutors/${result.targetId}`);
 
   redirect(destinationFor(result.type, result.targetId));
+}
+
+export type PromoState = { error?: string };
+
+/** Redeems a promo code for a pending payment, skipping the gateway entirely. */
+export async function applyPromoCode(
+  _prev: PromoState,
+  formData: FormData
+): Promise<PromoState> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const code = String(formData.get("code") ?? "");
+  const result = await redeemPromoCode(user.id, code);
+  if (!result.ok) {
+    return { error: result.error };
+  }
+
+  revalidatePath("/student/payments");
+  revalidatePath("/admin/payments");
+  redirect(`/checkout/${result.paymentId}`);
 }

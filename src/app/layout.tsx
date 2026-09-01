@@ -7,6 +7,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ContactModal from "@/components/ui/AuthModal";
 import FloatingContact from "@/components/ui/FloatingContact";
+import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from "@/lib/seo";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-geist-sans",
@@ -20,8 +21,41 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HighFive Tutors",
-  description: "Find expert tutors. Learn smarter. Teach confidently.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — Find Expert Tutors in Pakistan`,
+    template: `%s — ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "tutors in Pakistan",
+    "online tutoring",
+    "home tutor",
+    "MDCAT tutor",
+    "ECAT tutor",
+    "IELTS tutor",
+    "Mathematics tutor",
+    "Physics tutor",
+    "HighFive Tutors",
+  ],
+  authors: [{ name: SITE_NAME }],
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — Find Expert Tutors in Pakistan`,
+    description: SITE_DESCRIPTION,
+    locale: "en_PK",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — Find Expert Tutors in Pakistan`,
+    description: SITE_DESCRIPTION,
+  },
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default async function RootLayout({

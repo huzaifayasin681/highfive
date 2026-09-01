@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth-helpers";
 import { PAYMENT_TYPES, formatPKR } from "@/lib/payments";
 import PaymentGateway from "@/components/checkout/PaymentGateway";
+import PromoCodeForm from "@/components/checkout/PromoCodeForm";
 
 export const dynamic = "force-dynamic";
 
@@ -111,11 +112,14 @@ export default async function CheckoutPage({
                 </div>
               </div>
             ) : (
-              <PaymentGateway
-                paymentId={payment.id}
-                amountLabel={amountLabel}
-                description={payment.description}
-              />
+              <div className="space-y-5">
+                <PaymentGateway
+                  paymentId={payment.id}
+                  amountLabel={amountLabel}
+                  description={payment.description}
+                />
+                {payment.type === PAYMENT_TYPES.REGISTRATION && <PromoCodeForm />}
+              </div>
             )}
           </div>
         </div>
@@ -136,5 +140,6 @@ function Row({ label, value }: { label: string; value: string }) {
 function methodLabel(method: string | null): string {
   if (method === "jazzcash") return "JazzCash";
   if (method === "easypaisa") return "EasyPaisa";
+  if (method === "promo") return "Promo code";
   return "—";
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -14,10 +15,40 @@ import { getTeacherProfile } from "@/lib/queries";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
 import { hasUnlockedTutor, PRICES } from "@/lib/payments";
+import { SITE_URL } from "@/lib/seo";
 import ContactWidget from "@/components/tutor/ContactWidget";
 import ReviewSection from "@/components/tutor/ReviewSection";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const data = await getTeacherProfile(id);
+  if (!data) return {};
+
+  const { tutor } = data;
+  const subjects = tutor.subjects.slice(0, 3).join(", ");
+  const title = subjects ? `${tutor.name} — ${subjects} Tutor` : `${tutor.name} — Tutor`;
+  const description =
+    tutor.bio?.slice(0, 155) ||
+    `Book ${tutor.name}, a verified tutor on HighFive${subjects ? ` for ${subjects}` : ""}. Rated ${tutor.rating.toFixed(1)}/5 from ${tutor.reviewsCount} reviews.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/tutors/${id}` },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/tutors/${id}`,
+      images: tutor.avatar ? [tutor.avatar] : undefined,
+    },
+  };
+}
 
 function getYoutubeId(url: string) {
   const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
@@ -60,8 +91,31 @@ export default async function TutorProfilePage({
     !!viewer &&
     (viewer.role !== "STUDENT" || (await hasUnlockedTutor(viewer.id, tutor.id)));
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: tutor.name,
+    image: tutor.avatar || undefined,
+    jobTitle: tutor.subjects.length ? `${tutor.subjects[0]} Tutor` : "Tutor",
+    description: tutor.bio || undefined,
+    url: `${SITE_URL}/tutors/${tutor.id}`,
+    ...(tutor.reviewsCount > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: tutor.rating,
+            reviewCount: tutor.reviewsCount,
+          },
+        }
+      : {}),
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-emerald-950 to-teal-950 h-52 w-full relative overflow-hidden">
         <div className="absolute inset-0 hero-grid opacity-40" />

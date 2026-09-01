@@ -115,6 +115,18 @@ async function main() {
   // Editable site content ----------------------------------------------------
   await seedContent();
 
+  // Launch promo — first 50 students to register pay nothing ----------------
+  await prisma.promoCode.upsert({
+    where: { code: "FIRST50" },
+    update: {},
+    create: {
+      code: "FIRST50",
+      description: "Free registration for the first 50 students",
+      maxRedemptions: 50,
+    },
+  });
+  console.log("  ✓ promo code FIRST50 (50 free registrations)");
+
   // Realistic activity -------------------------------------------------------
   await seedStudents(passwordHash);
   await seedReviews();

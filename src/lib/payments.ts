@@ -191,3 +191,75 @@ export async function getUserPayments(userId: string) {
     orderBy: { createdAt: "desc" },
   });
 }
+
+// ── Promo codes ──────────────────────────────────────────────────────────────
+
+export type RedeemPromoResult =
+  | { ok: true; paymentId: string }
+  | { ok: false; error: string };
+
+/**
+ * Redeems a promo code against a user's pending registration payment, marking
+ * it paid for free. `PromoCode.redeemedCount` is only incremented by an update
+ * guarded with `redeemedCount < maxRedemptions`, so concurrent redemptions past
+ * the limit fail instead of over-counting.
+ */
+export async function redeemPromoCode(
+  userId: string,
+  rawCode: string
+): Promise<RedeemPromoResult> {
+  const code = rawCode.trim().toUpperCase();
+  if (!code) return { ok: false, error: "Enter a promo code" };
+
+  const promo = await prisma.promoCode.findUnique({ where: { code } });
+  if (!promo || !promo.active) {
+    return { ok: false, error: "Invalid promo code" };
+  }
+  if (promo.redeemedCount >= promo.maxRedemptions) {
+    return { ok: false, error: "This promo code has reached its usage limit" };
+  }
+
+  const payment = await prisma.payment.findFirst({
+    where: {
+      userId,
+      type: PAYMENT_TYPES.REGISTRATION,
+      status: { in: ["pending", "under_review"] },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  if (!payment) {
+    return { ok: false, error: "No pending registration payment was found" };
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const claim = await tx.promoCode.updateMany({
+        where: { id: promo.id, redeemedCount: { lt: promo.maxRedemptions } },
+        data: { redeemedCount: { increment: 1 } },
+      });
+      if (claim.count === 0) throw new Error("PROMO_LIMIT_REACHED");
+
+      await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: "paid",
+          method: "promo",
+          amount: 0,
+          metadata: JSON.stringify({ promoCode: code }),
+          paidAt: new Date(),
+        },
+      });
+      await tx.user.update({
+        where: { id: userId },
+        data: { registrationPaid: true },
+      });
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "PROMO_LIMIT_REACHED") {
+      return { ok: false, error: "This promo code just reached its usage limit" };
+    }
+    throw error;
+  }
+
+  return { ok: true, paymentId: payment.id };
+}
