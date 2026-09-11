@@ -47,11 +47,13 @@ export const metadata: Metadata = {
     title: `${SITE_NAME} — Find Expert Tutors in Pakistan`,
     description: SITE_DESCRIPTION,
     locale: "en_PK",
+    images: ["/logo.png"],
   },
   twitter: {
     card: "summary_large_image",
     title: `${SITE_NAME} — Find Expert Tutors in Pakistan`,
     description: SITE_DESCRIPTION,
+    images: ["/logo.png"],
   },
   alternates: {
     canonical: "/",

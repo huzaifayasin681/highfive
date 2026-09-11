@@ -230,9 +230,10 @@ export default async function TutorProfilePage({
                     />
                   ) : (
                     <video
-                      src={tutor.videoUrl}
+                      src={tutor.videoUrl.startsWith('data:') ? `/api/video/${tutor.id}` : tutor.videoUrl}
                       controls
                       className="w-full h-full object-cover absolute inset-0"
+                      preload="metadata"
                     >
                       Your browser does not support the video tag.
                     </video>

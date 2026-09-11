@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { Menu, X, GraduationCap } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
@@ -36,9 +37,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16 items-center">
 
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0" onClick={close}>
-            <div className="w-9 h-9 bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-xl flex items-center justify-center shadow-[0_4px_12px_-2px_rgba(5,150,105,0.5)]">
-              <GraduationCap className="w-5 h-5" />
-            </div>
+            <Image src="/logo.png" alt="High Five Tutors Global Logo" width={40} height={40} className="w-10 h-10 object-contain rounded-full border border-slate-100 shadow-sm" priority />
             <span className="font-extrabold text-xl text-slate-900 tracking-tight">
               High<span className="text-highfive-blue">Five</span>
             </span>
