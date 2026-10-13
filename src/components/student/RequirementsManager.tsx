@@ -33,8 +33,11 @@ export default function RequirementsManager({
   // Close the form once a save succeeds.
   useEffect(() => {
     if (state.ok) {
-      setShowForm(false);
-      setEditing(null);
+      const timer = setTimeout(() => {
+        setShowForm(false);
+        setEditing(null);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [state.ok]);
 

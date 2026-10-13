@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Search, Star, BookOpen, Video, Target, TrendingUp, ShieldCheck, Users, Award, Zap, GraduationCap, MessageCircle, CheckCircle2, Calculator, Atom, FlaskConical, Dna, Code, Stethoscope, PenTool } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -8,6 +9,7 @@ import TutorCard from '@/components/ui/TutorCard';
 import TrustBar from '@/components/ui/TrustBar';
 import { initialMockData } from '@/lib/mockData';
 import { useGlobal } from '@/context/GlobalContext';
+import type { Tutor } from '@/types';
 
 const TYPEWRITER_WORDS = ['Mathematics', 'Physics', 'IELTS', 'React', 'MDCAT', 'Chemistry', 'Coding'];
 
@@ -26,8 +28,10 @@ function TypewriterText() {
     } else if (deleting && displayed.length > 0) {
       timeout = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 55);
     } else {
-      setDeleting(false);
-      setWordIndex(i => (i + 1) % TYPEWRITER_WORDS.length);
+      timeout = setTimeout(() => {
+        setDeleting(false);
+        setWordIndex((i) => (i + 1) % TYPEWRITER_WORDS.length);
+      }, 200);
     }
     return () => clearTimeout(timeout);
   }, [displayed, deleting, wordIndex]);
@@ -64,9 +68,23 @@ const testimonials = [
   { name: 'Sana Mehmood', role: 'FSc Student, Karachi', avatar: 'https://i.pravatar.cc/60?u=sana', text: "I got 7.5 in IELTS with Fatima's guidance. She is incredibly professional, patient and caring.", rating: 5 },
 ];
 
-export default function HomeClient() {
+export default function HomeClient({ tutors = [] }: { tutors?: Tutor[] }) {
+  const router = useRouter();
+  const [heroSearch, setHeroSearch] = useState('');
   const { openContactModal } = useGlobal();
-  const featuredTutors = initialMockData.tutors.filter(t => t.isFeatured);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (heroSearch.trim()) {
+      router.push(`/search?q=${encodeURIComponent(heroSearch.trim())}`);
+    } else {
+      router.push('/search');
+    }
+  };
+
+  const featuredTutors = tutors.length > 0
+    ? tutors.slice(0, 6)
+    : initialMockData.tutors.filter(t => t.isFeatured);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -107,20 +125,26 @@ export default function HomeClient() {
             IELTS, coding and more. Learn online or in person, on your schedule.
           </p>
 
-          <div className="animate-fade-in-down delay-500 w-full max-w-2xl bg-white rounded-2xl p-1.5 flex items-center shadow-[0_20px_60px_-15px_rgba(2,6,23,0.6)] mb-6 border border-white/10">
+          <form onSubmit={handleSearchSubmit} className="animate-fade-in-down delay-500 w-full max-w-2xl bg-white rounded-2xl p-1.5 flex items-center shadow-[0_20px_60px_-15px_rgba(2,6,23,0.6)] mb-6 border border-white/10">
             <div className="pl-4 text-slate-400"><Search className="w-5 h-5" /></div>
-            <input type="text" placeholder="What do you want to learn? e.g. Calculus, React, IELTS" className="flex-grow bg-transparent text-slate-800 px-4 py-3 outline-none text-base w-full placeholder:text-slate-400" />
-            <Link href="/search" className="btn btn-primary px-7 py-3">
+            <input
+              type="text"
+              value={heroSearch}
+              onChange={(e) => setHeroSearch(e.target.value)}
+              placeholder="What do you want to learn? e.g. Calculus, React, IELTS"
+              className="flex-grow bg-transparent text-slate-800 px-4 py-3 outline-none text-base w-full placeholder:text-slate-400"
+            />
+            <button type="submit" className="btn btn-primary px-7 py-3">
               Search
-            </Link>
-          </div>
+            </button>
+          </form>
 
           {/* Social proof */}
           <div className="animate-fade-in-down delay-500 flex items-center gap-3 mb-14 text-sm text-slate-300">
             <div className="flex -space-x-2">
               {['ayesha', 'bilal', 'fatima', 'usman'].map((u) => (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img key={u} src={`https://i.pravatar.cc/40?u=${u}`} alt="" className="w-7 h-7 rounded-full border-2 border-slate-900 object-cover" />
+                <img key={u} src={`https://i.pravatar.cc/40?u=${u}`} alt={`Student ${u}`} className="w-7 h-7 rounded-full border-2 border-slate-900 object-cover" />
               ))}
             </div>
             <span><span className="text-white font-semibold">5,000+ students</span> learning with HighFive</span>
@@ -151,7 +175,7 @@ export default function HomeClient() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {subjects.map((s, i) => (
-              <Link key={i} href="/search" className={`card-hover bg-gradient-to-br ${s.color} rounded-2xl p-5 text-white text-center flex flex-col items-center`}>
+              <Link key={i} href={`/search?subject=${encodeURIComponent(s.name)}`} className={`card-hover bg-gradient-to-br ${s.color} rounded-2xl p-5 text-white text-center flex flex-col items-center`}>
                 <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center mb-3">
                   <s.icon className="w-6 h-6" strokeWidth={2} />
                 </div>

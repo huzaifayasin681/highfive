@@ -10,12 +10,12 @@ import {
   PAYMENT_TYPES,
   PAYMENT_LABELS,
   PRICES,
-  completePayment,
   createPendingPayment,
   hasUnlockedTutor,
   redeemPromoCode,
   submitPaymentForReview,
   type PaymentType,
+  type PaymentMethod,
   type PaymentMetadata,
 } from "@/lib/payments";
 
@@ -174,7 +174,7 @@ export async function confirmPayment(
   const receiptUrl = `data:${mimeType};base64,${buffer.toString("base64")}`;
 
   const { paymentId, method, mobileNumber } = parsed.data;
-  const result = await submitPaymentForReview(paymentId, user.id, method as any, mobileNumber, receiptUrl);
+  const result = await submitPaymentForReview(paymentId, user.id, method as PaymentMethod, mobileNumber, receiptUrl);
   if (!result) {
     return { error: "This payment could not be processed. Please try again." };
   }

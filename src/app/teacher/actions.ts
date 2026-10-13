@@ -45,7 +45,17 @@ export async function updateTeacherProfile(
     select: { id: true },
   });
 
-  const base: any = {
+  const base: {
+    bio: string;
+    qualifications: string;
+    experienceYears: number;
+    hourlyRate: number;
+    mode: string;
+    location: string | null;
+    photoUrl: string | null;
+    responseTime: string | null;
+    videoUrl?: string;
+  } = {
     bio: parsed.data.bio,
     qualifications: parsed.data.qualifications,
     experienceYears: parsed.data.experienceYears,

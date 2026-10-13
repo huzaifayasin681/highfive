@@ -1,19 +1,43 @@
 "use client";
 
 import { useGlobal } from '@/context/GlobalContext';
-import { X, GraduationCap, Send } from 'lucide-react';
+import { X, GraduationCap, Send, Phone } from 'lucide-react';
 import { useState } from 'react';
+import { submitContact } from '@/app/contact/actions';
 
 export default function ContactModal() {
   const { isContactModalOpen, closeContactModal } = useGlobal();
   const [role, setRole] = useState<'student' | 'tutor'>('student');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!isContactModalOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError(null);
+    const formData = new FormData(e.currentTarget);
+    const firstName = formData.get('firstName') as string;
+    const lastName = formData.get('lastName') as string;
+    const email = formData.get('email') as string;
+    const phone = formData.get('phone') as string;
+    const subjectInterest = formData.get('subjectInterest') as string;
+
+    const data = new FormData();
+    data.set('name', `${firstName} ${lastName}`.trim());
+    data.set('email', email);
+    data.set('subject', `Enquiry (${role}): ${subjectInterest || 'General'}`);
+    data.set('message', `Role: ${role}\nPhone: ${phone}\nInterested Subjects: ${subjectInterest}`);
+
+    const res = await submitContact({}, data);
+    setLoading(false);
+    if (res.ok) {
+      setSubmitted(true);
+    } else {
+      setError(res.error || 'Failed to submit enquiry. Please try again.');
+    }
   };
 
   return (
@@ -30,7 +54,7 @@ export default function ContactModal() {
             <span className="font-extrabold text-lg">HighFive Tutors</span>
           </div>
           <h2 className="text-2xl font-extrabold mb-1">{role === 'student' ? 'Start Learning Today' : 'Start Teaching Today'}</h2>
-          <p className="text-emerald-200 text-sm">Fill in your details and we'll get back to you within 24 hours.</p>
+          <p className="text-emerald-200 text-sm">Fill in your details and we&apos;ll get back to you within 24 hours.</p>
         </div>
 
         <div className="p-8">
@@ -50,34 +74,46 @@ export default function ContactModal() {
               {/* Role toggle */}
               <div className="flex bg-slate-100 p-1 rounded-xl mb-6">
                 <button
+                  type="button"
                   className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${role === 'student' ? 'bg-white text-highfive-blue shadow-sm' : 'text-slate-500'}`}
                   onClick={() => setRole('student')}
                 >
-                  I'm a Student
+                  I&apos;m a Student
                 </button>
                 <button
+                  type="button"
                   className={`flex-1 py-2 text-sm font-bold rounded-lg transition-colors ${role === 'tutor' ? 'bg-white text-highfive-blue shadow-sm' : 'text-slate-500'}`}
                   onClick={() => setRole('tutor')}
                 >
-                  I'm a Tutor
+                  I&apos;m a Tutor
                 </button>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {error && <p className="text-red-600 text-xs">{error}</p>}
                 <div className="grid grid-cols-2 gap-3">
-                  <input required type="text" placeholder="First name" className="px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
-                  <input required type="text" placeholder="Last name" className="px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
+                  <input required name="firstName" type="text" placeholder="First name" className="px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
+                  <input required name="lastName" type="text" placeholder="Last name" className="px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
                 </div>
-                <input required type="email" placeholder="Email address" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
-                <input required type="tel" placeholder="Phone / WhatsApp number" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
+                <input required name="email" type="email" placeholder="Email address" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
+                <input required name="phone" type="tel" placeholder="Phone / WhatsApp number" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
                 {role === 'student' ? (
-                  <input type="text" placeholder="Subject you need help with (e.g. IELTS, MDCAT)" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
+                  <input name="subjectInterest" type="text" placeholder="Subject you need help with (e.g. IELTS, MDCAT)" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
                 ) : (
-                  <input type="text" placeholder="Subjects you can teach" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
+                  <input name="subjectInterest" type="text" placeholder="Subjects you can teach" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-highfive-blue text-sm" />
                 )}
-                <a href="tel:0300-7511624" className="w-full bg-highfive-blue text-white font-bold py-3.5 rounded-xl hover:bg-emerald-800 transition-colors flex items-center justify-center gap-2">
-                  <Send className="w-4 h-4" /> Call 0300-7511624
-                </a>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-highfive-blue text-white font-bold py-3.5 rounded-xl hover:bg-emerald-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+                >
+                  <Send className="w-4 h-4" /> {loading ? "Sending..." : "Submit Enquiry"}
+                </button>
+                <div className="text-center pt-1">
+                  <a href="tel:0300-7511624" className="text-xs text-slate-500 hover:text-highfive-blue inline-flex items-center gap-1 font-medium">
+                    <Phone className="w-3.5 h-3.5" /> Or call us directly: 0300-7511624
+                  </a>
+                </div>
               </form>
             </>
           )}

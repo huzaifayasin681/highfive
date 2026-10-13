@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   Star,
@@ -66,10 +65,13 @@ function stars(n: number) {
 
 export default async function TutorProfilePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ book?: string }>;
 }) {
   const { id } = await params;
+  const { book } = (await searchParams) ?? {};
   const data = await getTeacherProfile(id);
   if (!data) notFound();
 
@@ -276,6 +278,7 @@ export default async function TutorProfilePage({
               isLoggedIn={!!viewer}
               unlocked={unlocked}
               unlockPrice={PRICES.UNLOCK_TUTOR}
+              initialBook={book === "true"}
             />
           </div>
         </div>

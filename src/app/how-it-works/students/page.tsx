@@ -2,8 +2,9 @@ import { Search, MessageSquare, Video, Star } from "lucide-react";
 import HowItWorks from "@/components/marketing/HowItWorks";
 
 export const metadata = {
-  title: "How It Works for Students — HighFive",
+  title: "How It Works for Students",
   description: "Find and connect with the right tutor in four simple steps.",
+  alternates: { canonical: "/how-it-works/students" },
 };
 
 export default function StudentsHowItWorks() {

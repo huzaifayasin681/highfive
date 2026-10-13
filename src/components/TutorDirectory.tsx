@@ -16,9 +16,17 @@ const DEFAULT_PILLS = [
   "IELTS",
 ];
 
-export default function TutorDirectory({ tutors }: { tutors: Tutor[] }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activePill, setActivePill] = useState("All");
+export default function TutorDirectory({
+  tutors,
+  initialQuery = "",
+  initialSubject = "All",
+}: {
+  tutors: Tutor[];
+  initialQuery?: string;
+  initialSubject?: string;
+}) {
+  const [searchTerm, setSearchTerm] = useState(initialQuery);
+  const [activePill, setActivePill] = useState(initialSubject || "All");
   const [maxPrice, setMaxPrice] = useState<number>(5000);
   const [showFilters, setShowFilters] = useState(false);
 

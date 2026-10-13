@@ -1,6 +1,10 @@
 import LegalPage from "@/components/marketing/LegalPage";
 
-export const metadata = { title: "Privacy Policy — HighFive" };
+export const metadata = {
+  title: "Privacy Policy",
+  description: "Read HighFive's privacy policy to understand how we protect and handle your personal data.",
+  alternates: { canonical: "/privacy" },
+};
 
 export default function PrivacyPage() {
   return (

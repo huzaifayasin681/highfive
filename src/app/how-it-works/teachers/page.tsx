@@ -2,8 +2,9 @@ import { UserPlus, BadgeCheck, Inbox, TrendingUp } from "lucide-react";
 import HowItWorks from "@/components/marketing/HowItWorks";
 
 export const metadata = {
-  title: "How It Works for Teachers — HighFive",
+  title: "How It Works for Teachers",
   description: "Build your profile, get verified and start teaching students across Pakistan.",
+  alternates: { canonical: "/how-it-works/teachers" },
 };
 
 export default function TeachersHowItWorks() {

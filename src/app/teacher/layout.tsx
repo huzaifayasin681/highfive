@@ -11,9 +11,10 @@ export default async function TeacherLayout({
   children: React.ReactNode;
 }) {
   const user = await requireRole(["TEACHER", "ADMIN"]);
-  const [openLeads, threads] = await Promise.all([
+  const [openLeads, threads, unreadNotifications] = await Promise.all([
     prisma.requirement.count({ where: { status: "open" } }),
     getThreadsForUser(user.id),
+    prisma.notification.count({ where: { userId: user.id, read: false } }),
   ]);
   const unread = threads.reduce((sum, t) => sum + t.unread, 0);
 
@@ -32,7 +33,7 @@ export default async function TeacherLayout({
                   <p className="text-xs text-slate-400">Teacher account</p>
                 </div>
               </div>
-              <TeacherNav leads={openLeads} unread={unread} />
+              <TeacherNav leads={openLeads} unread={unread} notifications={unreadNotifications} />
               <div className="mt-2 pt-2 border-t border-slate-100">
                 <SignOutButton />
               </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { useGlobal } from '@/context/GlobalContext';
 import { MessageCircle } from 'lucide-react';
 
 // Site-wide floating "talk to us" action that opens the enquiry modal.

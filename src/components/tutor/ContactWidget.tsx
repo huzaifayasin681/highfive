@@ -16,6 +16,7 @@ export default function ContactWidget({
   isLoggedIn,
   unlocked,
   unlockPrice,
+  initialBook = false,
 }: {
   targetId: string;
   targetName: string;
@@ -25,8 +26,9 @@ export default function ContactWidget({
   isLoggedIn: boolean;
   unlocked: boolean;
   unlockPrice: number;
+  initialBook?: boolean;
 }) {
-  const [panel, setPanel] = useState<Panel>("none");
+  const [panel, setPanel] = useState<Panel>(initialBook ? "book" : "none");
   const firstName = targetName.split(" ")[0];
 
   return (

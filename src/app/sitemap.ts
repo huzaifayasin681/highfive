@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/seo";
 
+export const revalidate = 3600;
+
 const STATIC_ROUTES = [
   "",
   "/about",

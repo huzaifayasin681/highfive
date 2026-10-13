@@ -9,12 +9,12 @@ const trust = [
 ];
 
 const socials = [
-  { Icon: FaXTwitter, label: 'X (Twitter)', href: '#', hover: 'hover:bg-slate-950' },
-  { Icon: FaInstagram, label: 'Instagram', href: '#', hover: 'hover:bg-pink-600' },
-  { Icon: FaLinkedinIn, label: 'LinkedIn', href: '#', hover: 'hover:bg-sky-700' },
-  { Icon: FaYoutube, label: 'YouTube', href: '#', hover: 'hover:bg-red-600' },
-  { Icon: FaFacebookF, label: 'Facebook', href: '#', hover: 'hover:bg-blue-600' },
-  { Icon: FaWhatsapp, label: 'WhatsApp', href: '#', hover: 'hover:bg-emerald-600' },
+  { Icon: FaXTwitter, label: 'X (Twitter)', href: 'https://twitter.com', hover: 'hover:bg-slate-950' },
+  { Icon: FaInstagram, label: 'Instagram', href: 'https://instagram.com', hover: 'hover:bg-pink-600' },
+  { Icon: FaLinkedinIn, label: 'LinkedIn', href: 'https://linkedin.com', hover: 'hover:bg-sky-700' },
+  { Icon: FaYoutube, label: 'YouTube', href: 'https://youtube.com', hover: 'hover:bg-red-600' },
+  { Icon: FaFacebookF, label: 'Facebook', href: 'https://facebook.com', hover: 'hover:bg-blue-600' },
+  { Icon: FaWhatsapp, label: 'WhatsApp', href: 'https://wa.me/923007511624', hover: 'hover:bg-emerald-600' },
 ];
 
 export default function Footer() {
@@ -45,7 +45,7 @@ export default function Footer() {
               <span className="font-extrabold text-xl text-white">High<span className="text-emerald-400">Five</span> Tutors</span>
             </Link>
             <p className="text-sm text-slate-400 leading-relaxed mb-6 max-w-xs">
-              Pakistan's most trusted online tutoring platform. Connecting ambitious students with expert tutors since 2024.
+              Pakistan&apos;s most trusted online tutoring platform. Connecting ambitious students with expert tutors since 2024.
             </p>
             <div className="space-y-2.5 text-sm mb-6">
               <div className="flex items-center gap-2.5">
@@ -54,7 +54,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <span>support.highfive@gmail.com</span>
+                <span>support@highfive.pk</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <MapPin className="w-4 h-4 text-emerald-400 flex-shrink-0" />

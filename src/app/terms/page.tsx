@@ -1,6 +1,10 @@
 import LegalPage from "@/components/marketing/LegalPage";
 
-export const metadata = { title: "Terms of Service — HighFive" };
+export const metadata = {
+  title: "Terms of Service",
+  description: "Read HighFive's terms of service and platform conditions.",
+  alternates: { canonical: "/terms" },
+};
 
 export default function TermsPage() {
   return (

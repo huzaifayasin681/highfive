@@ -42,6 +42,7 @@ model User {
   auditLogs       AuditLog[]      @relation("AuditActor")
   payments        Payment[]       @relation("UserPayments")
   passwordResetRequest PasswordResetRequest?
+  notifications   Notification[]  @relation("UserNotifications")
 
   // Auth.js (optional — enables OAuth / db sessions later without a migration)
   accounts Account[]
@@ -263,3 +264,20 @@ model PasswordResetRequest {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   // NEW_STUDENT | NEW_LEAD | SYSTEM
+  link      String?  // destination URL
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+}
+

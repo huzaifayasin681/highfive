@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import HomeClient from "./HomeClient";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from "@/lib/seo";
 
+import { getDirectoryTeachers } from "@/lib/queries";
+
 export const metadata: Metadata = {
-  title: `${SITE_NAME} — Find Expert Tutors in Pakistan`,
+  title: {
+    absolute: `${SITE_NAME} — Find Expert Tutors in Pakistan`,
+  },
   description: SITE_DESCRIPTION,
   alternates: { canonical: "/" },
 };
@@ -25,14 +29,15 @@ const jsonLd = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  const tutors = await getDirectoryTeachers();
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <HomeClient />
+      <HomeClient tutors={tutors} />
     </>
   );
 }

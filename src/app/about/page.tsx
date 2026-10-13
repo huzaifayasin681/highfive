@@ -5,8 +5,9 @@ import { getContentMap } from "@/lib/content";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "About Us — HighFive Tutors",
+  title: "About Us",
   description: "HighFive connects students across Pakistan with verified, high-quality tutors.",
+  alternates: { canonical: "/about" },
 };
 
 const stats = [

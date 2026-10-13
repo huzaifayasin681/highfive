@@ -33,7 +33,14 @@ export async function createRequirement(
   await prisma.requirement.create({
     data: { ...parsed.data, studentId: user.id },
   });
+  const { notifyTeachersOfNewLead } = await import("@/lib/notifications");
+  await notifyTeachersOfNewLead({
+    studentName: user.name,
+    subject: parsed.data.subject,
+    description: parsed.data.description,
+  });
   revalidatePath("/student/requirements");
+  revalidatePath("/teacher/leads");
   return { ok: true };
 }
 

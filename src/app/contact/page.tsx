@@ -2,8 +2,9 @@ import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import ContactForm from "@/components/marketing/ContactForm";
 
 export const metadata = {
-  title: "Contact Us — HighFive",
-  description: "Get in touch with the HighFive team.",
+  title: "Contact Us",
+  description: "Get in touch with the HighFive team. Questions, feedback or partnership ideas.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
@@ -22,7 +23,7 @@ export default function ContactPage() {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="space-y-4">
-          <Info icon={Phone} label="Phone" value="+92 300 1234567" />
+          <Info icon={Phone} label="Phone" value="0300-7511624" />
           <Info icon={Mail} label="Email" value="support@highfive.pk" />
           <Info icon={MapPin} label="Office" value="Lahore, Pakistan 🇵🇰" />
         </div>

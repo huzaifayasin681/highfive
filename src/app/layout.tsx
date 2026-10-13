@@ -55,9 +55,6 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: ["/logo.png"],
   },
-  alternates: {
-    canonical: "/",
-  },
 };
 
 export default async function RootLayout({

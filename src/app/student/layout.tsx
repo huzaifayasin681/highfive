@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GraduationCap } from "lucide-react";
 import { requireRole } from "@/lib/auth-helpers";

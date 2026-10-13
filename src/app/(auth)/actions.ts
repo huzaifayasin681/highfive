@@ -90,6 +90,11 @@ export async function registerAction(
     },
   });
 
+  if (role === "STUDENT") {
+    const { notifyTeachersOfNewStudent } = await import("@/lib/notifications");
+    await notifyTeachersOfNewStudent({ studentName: name });
+  }
+
   // New students must pay the one-time registration fee before their dashboard
   // unlocks; teachers go straight through.
   const redirectTo =
@@ -130,7 +135,8 @@ export async function forgotPasswordAction(
     return { fieldErrors: { email: "Please enter a valid email address." } };
   }
   
-  const user = await prisma.user.findUnique({ where: { email } });
+  const normalizedEmail = email.toLowerCase();
+  const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (!user) {
     // Return fake success for non-existent user
     return { ok: true, message: "Your reset request has been sent to the admin. Please check back here later." };
@@ -155,8 +161,6 @@ export async function forgotPasswordAction(
   return { ok: true, message: "Your reset request has been sent to the admin. Please check back here later." };
 }
 
-import bcryptjs from "bcryptjs";
-
 export async function resetPasswordWithRequestAction(
   _prev: AuthFormState,
   formData: FormData
@@ -167,11 +171,13 @@ export async function resetPasswordWithRequestAction(
   if (!email || typeof email !== "string") {
     return { error: "Missing email" };
   }
+  const normalizedEmail = email.toLowerCase();
+
   if (!newPassword || typeof newPassword !== "string" || newPassword.length < 6) {
-    return { fieldErrors: { newPassword: "Password must be at least 6 characters" }, ok: true, step: "NEW_PASSWORD", email };
+    return { fieldErrors: { newPassword: "Password must be at least 6 characters" }, ok: true, step: "NEW_PASSWORD", email: normalizedEmail };
   }
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (!user) return { error: "User not found" };
 
   const existingRequest = await prisma.passwordResetRequest.findUnique({
@@ -182,7 +188,7 @@ export async function resetPasswordWithRequestAction(
     return { error: "You do not have an approved password reset request." };
   }
 
-  const passwordHash = await bcryptjs.hash(newPassword, 10);
+  const passwordHash = await bcrypt.hash(newPassword, 10);
 
   await prisma.$transaction([
     prisma.user.update({
