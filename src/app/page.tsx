@@ -17,6 +17,8 @@ const jsonLd = {
   "@type": "Organization",
   name: SITE_NAME,
   url: SITE_URL,
+  logo: `${SITE_URL}/logo.png`,
+  image: `${SITE_URL}/logo.png`,
   description: SITE_DESCRIPTION,
   sameAs: [],
   potentialAction: {

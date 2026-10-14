@@ -1,7 +1,7 @@
 export const SITE_NAME = "HighFive Tutors";
 
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://highfivetutors.com"
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.high5tutors.com"
 ).replace(/\/$/, "");
 
 export const SITE_DESCRIPTION =

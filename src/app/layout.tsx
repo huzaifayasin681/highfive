@@ -40,6 +40,16 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: SITE_NAME }],
   robots: { index: true, follow: true },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+  },
   openGraph: {
     type: "website",
     url: SITE_URL,
